@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests-oauthlib = "*"
+requests-toolbelt = "*"
+
+[dev-packages]
+coverage = "*"
+safety = "*"
+
+[requires]
+python_version = "3.6"

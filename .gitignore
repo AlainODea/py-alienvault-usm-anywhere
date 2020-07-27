@@ -1,0 +1,12 @@
+__pycache__
+/.scannerwork/
+/venv/
+/.idea/
+*.iml
+.DS_Store
+/.coverage
+/coverage.xml
+*-config.json
+/*.ndjson
+/*.log
+/.vscode
