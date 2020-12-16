@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "py-alienvault-usm-anywhere"
+name = "alienvault_usm_anywhere"
 version = "0.1.0"
 description = ""
 authors = ["Alain O'Dea", "ranguli <hello@joshmurphy.ca>"]
