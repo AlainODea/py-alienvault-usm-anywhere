@@ -14,6 +14,11 @@ class Client:
         self.s = s
         self.domain = domain
 
+class AuthException(Exception):
+    """Exception raised for AlienVault authentication errors """
+    def __init__(self, r, message):
+        self.r = r
+        self.message = message
 
 class ClientException(Exception):
     """Exception raised for AlienVault client errors """
@@ -28,6 +33,8 @@ def dump_all(r):
 
 
 def raise_on_error(r):
-    if r.status_code != 200:
+    if r.status_code == 401:
+        raise AuthException(r, f"{r.status_code}: {r.content.decode('utf-8', 'strict')}")
+    elif r.status_code != 200:
         raise ClientException(r, f"{r.status_code}: {r.content.decode('utf-8', 'strict')}")
     return r
