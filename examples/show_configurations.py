@@ -14,7 +14,10 @@ import sys
 def main():
     subdomain = sys.argv[1]
     domain = "alienvault.cloud"
-    api_client = alienvault_usm_anywhere.client(f"{subdomain}.{domain}")
+
+    auth_cookies = alienvault_usm_anywhere.get_auth_cookies(f"{subdomain}.{domain}", "firefox")
+    api_client = alienvault_usm_anywhere.client(f"{subdomain}.{domain}", auth_cookies)
+
     correlation_lists = alienvault_usm_anywhere.correlation_lists(api_client)
     asset_groups = alienvault_usm_anywhere.asset_groups(api_client)
     orchestration_rules = alienvault_usm_anywhere.orchestration_rules(api_client)

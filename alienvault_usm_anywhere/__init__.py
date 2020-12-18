@@ -7,7 +7,7 @@ alienvault_usm_anywhere
 """
 
 import requests
-from getpass import getpass
+import browser_cookie3
 
 from alienvault_usm_anywhere.correlation_lists import resource as correlation_lists
 from alienvault_usm_anywhere.orchestration_rules import resource as orchestration_rules
@@ -16,48 +16,26 @@ from alienvault_usm_anywhere.asset_groups import resource as asset_groups
 from alienvault_usm_anywhere.scheduler import resource as scheduler
 from alienvault_usm_anywhere.types import *
 
-
-def client(domain):
+def client(domain, auth_cookies):
     s = __create_session()
-
-    __load_spa(domain, s)
-    __do_login(domain, s)
-    __do_mfa(domain, s)
+    s.cookies.update(auth_cookies)
 
     return Client(s, domain)
 
+def get_auth_cookies(domain, browser):
+    auth_cookies = {}
 
-def __load_spa(domain, s):
-    r = s.get(f"https://{domain}/")
-    raise_on_error(r)
-    s.headers.update({
-        'X-XSRF-TOKEN': r.cookies['XSRF-TOKEN'],
-        'Origin': f"https://{domain}",
-        'Referer': f"https://{domain}/",
-    })
-    return r
+    if browser == "firefox":
+        cookie_jar = browser_cookie3.firefox()
+    elif browser == "chrome":
+        cookie_jar = browser_cookie3.chrome()
+    else:
+        raise ValueError("Argument \"browser\" must be one of \"chrome\" or \"firefox\"")
 
-
-def __do_login(domain, s):
-    r = s.post(
-        f"https://{domain}/api/2.0/login",
-        json={
-            "email": input(f"Username ({domain}): "),
-            "password": getpass(f"Password ({domain}): "),
-        }
-    )
-    return raise_on_error(r)
-
-
-def __do_mfa(domain, s):
-    r = s.post(
-        f"https://{domain}/api/2.0/verify",
-        json={
-            "token": getpass(f"OTP/MFA token ({domain}): "),
-        }
-    )
-    return raise_on_error(r)
-
+    for cookie in cookie_jar:
+        if cookie.domain == domain and cookie.name in ("XSRF-TOKEN", "JSESSIONID"):
+            auth_cookies.update({cookie.name : cookie.value})
+    return auth_cookies
 
 def __create_session():
     s = requests.Session()
